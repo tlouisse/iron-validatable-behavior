@@ -93,11 +93,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 /**
                  * Array holding error objects for the current state of the validatable element.
-                 * Each error has the following format:
-                 * {Object} error
-                 * {string} error.name -- validator name of custom validator instance with IronValidatorBehavior
-                 * {string} error.message -- message that is assigned to the validator instance
-                 * {number} error.priority -- priority of the error message, based on order supplied in validator property
+                 * Each error has the following keys:
+                 * <ul>
+                 * <li><b>validator</b> (String) : name of custom validator instance with IronValidatorBehavior</li>
+                 * <li><b>message</b> (String) : message that is assigned to the validator instance</li>
+                 * <li><b>priority</b> (Number) : priority of the error message, based on order supplied in validator property</li>
+                 * </ul>
                  */
                 errors: {
                     type: Array,
@@ -183,7 +184,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 for (var v in this._validator) {
                     if (!this._validator[v].validate(value, this)) {
                         this.push('errors', {
-                            name: this._validator[v].validatorName,
+                            validator: this._validator[v].validatorName,
                             message: this._validator[v].message,
                             priority: index
                         });
