@@ -1,0 +1,93 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+
+    /**
+     *   `Polymer.IronValidationTriggerBehavior` is behavior that decides when form input will be validated.
+     *    The behavior needs to be applied to elements wrapping an iron-input.
+     *    It is up to elements implementing this behavior to decide when error messages will be shown.
+     *
+     *    Validation of a form field will be triggered when the user:
+     *    <ol>
+     *       <li>leaves a form field -> This will be applied when input is still 'untouched'</li>
+     *       <li>on keyup (actually, on the input event) -> This will be applied when input already 'touched'</li>
+     *    </ol>
+     *
+     *    @demo demo/index.html
+     *    @element iron-validation-trigger-behavior
+     */
+
+
+    /* @polymerBehavior */
+    Polymer.IronValidationTriggerBehavior = {
+
+
+        properties: {
+            /**
+             * When true, thus behavior will validate on blur/keyup and set
+             * @private
+             */
+            autoValidate: {
+                type: Boolean,
+                value: false
+            }
+        },
+
+        /**
+         * Register event handlers and validate prefilled inputs
+         */
+        attached: function () {
+            if(!this.autoValidate) {
+                return;
+            }
+
+            this.addEventListener('blur', this._valTrigOnBlur.bind(this));
+            this.addEventListener('bind-value-changed', this._valTrigOnValueChange.bind(this));
+            // Since we not only want to validate on 'input' event, but to every (bind-)value change (implemented by iron-input and iron-autogrow-textarea)
+
+            if (this.value) {
+                this.validate();
+                this._setTouched(true); // treat this as if it were touched, so that validation will be performed on keyup
+            }
+        },
+
+        /**
+         * Deregister event handlers
+         */
+        detached: function () {
+            if(!this.autoValidate) {
+                return;
+            }
+
+            this.removeEventListener('blur', this._valTrigOnBlur);
+            this.removeEventListener('bind-value-changed', this._valTrigOnValueChange);
+        },
+
+        /**
+         * Sets touched value and validates when already dirty.
+         * Resets the touched state when user leaves a field without a value. On next interaction, user will start with a clean slave
+         * @private
+         */
+        _valTrigOnBlur: function () {
+            if (this.dirty) {
+                this.validate();
+            }
+            this._setTouched(!!this.value);
+        },
+
+        /**
+         * Sets dirty value and validates when already touched or invalid
+         * @private
+         */
+        _valTrigOnValueChange: function () {
+            this._setDirty(true);
+            if (this.touched || this.invalid) {
+                this.debounce('validate', function () {
+                    this.validate();
+                }, 100);
+            }
+        }
+
+    };
+
+</script>
