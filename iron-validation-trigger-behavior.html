@@ -3,15 +3,16 @@
 <script>
 
     /**
-     *   `Polymer.IronValidationTriggerBehavior` is behavior that decides when form input will be validated.
-     *    The behavior needs to be applied to elements wrapping an iron-input.
-     *    It is up to elements implementing this behavior to decide when error messages will be shown.
+     *   `Polymer.IronValidationTriggerBehavior` decides when form input will be validated.
+     *    The behavior needs to be applied to iron-input (or other elements implementing bindValue and ironValidatablebehavior).
      *
      *    Validation of a form field will be triggered when the user:
      *    <ol>
      *       <li>leaves a form field -> This will be applied when input is still 'untouched'</li>
      *       <li>on keyup (actually, on the input event) -> This will be applied when input already 'touched'</li>
      *    </ol>
+     *
+     *    By default, this behavior is disabled when applied. In order to enable, set the 'auto-validate' property ro true
      *
      *    @demo demo/index.html
      *    @element iron-validation-trigger-behavior
@@ -24,7 +25,7 @@
 
         properties: {
             /**
-             * When true, thus behavior will validate on blur/keyup and set
+             * When true, the behavior will manage 'touched' and 'dirty' states and validate on blur/bind-value-changed
              * @private
              */
             autoValidate: {
