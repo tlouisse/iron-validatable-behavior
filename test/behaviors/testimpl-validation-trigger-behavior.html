@@ -1,0 +1,47 @@
+<link rel="import" href="../../iron-validation-trigger-behavior.html">
+<link rel="import" href="../../iron-validatable-behavior.html">
+
+<dom-module id="testimpl-validation-trigger-behavior">
+
+    <script>
+
+        Polymer({
+
+            extends: 'input',
+
+            is: 'testimpl-validation-trigger-behavior',
+
+            behaviors: [
+                Polymer.IronValidatableBehavior,
+                Polymer.IronValidationTriggerBehavior
+            ],
+
+            properties: {
+                /**
+                 * Use this property instead of `value` for two-way data binding.
+                 */
+                bindValue: {
+                    observer: '_bindValueChanged',
+                    type: String
+                }
+            },
+
+            _bindValueChanged: function() {
+                if (this.value !== this.bindValue) {
+                    this.value = !(this.bindValue || this.bindValue === 0 || this.bindValue === false) ? '' : this.bindValue;
+                }
+                // manually notify because we don't want to notify until after setting value
+                this.fire('bind-value-changed', {value: this.bindValue});
+            },
+
+            validate: function() {
+                var valid = Polymer.IronValidatableBehavior.validate.call(this, this.value) && this.checkValidity();
+                this.invalid = !valid;
+                return valid;
+            }
+
+        });
+
+    </script>
+
+</dom-module>

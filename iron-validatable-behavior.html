@@ -22,7 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   var nativeMeta = null;
 
   /**
-   * `Use Polymer.IronValidatableBehavior` to implement an element that validates user input.
+   * Use `Polymer.IronValidatableBehavior` to implement an element that validates user input.
    * Use the related `Polymer.IronValidatorBehavior` to add custom validation logic to an iron-input.
    *
    * By default, an `<iron-form>` element validates its fields when the user presses the submit button.
@@ -37,12 +37,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * See [this](https://github.com/PolymerElements/iron-form/blob/master/demo/simple-element.html)
    * for an example.
    *
+   * ### Interaction states
+   * - dirty: True when user has focused and left(blurred) the field
+   * - touched: True when user has typed in something in the input field
+   *
+   * For the outside world, these values may only be read. In fundamental form components and behaviors using this be behavior
+   * (for instance the `IronValidationTriggerBehavior` ) these read only values may be altered (do this with _setDirty and _setTouched respectively).
+   *
+   *
    * ### Accessibility
    *
-   * Changing the `invalid` property, either manually or by calling `validate()` will update the
-   * `aria-invalid` attribute.
+   * Changing the `invalid` property, either manually or by calling `validate()` will update the `aria-invalid` attribute.
    *
    * @demo demo/index.html
+   * @demo demo/old-vs-new/index.html Shows differences between new and old API. Also shows the interaction states in combination with validation-trigger-behavior
    * @polymerBehavior
    */
   Polymer.IronValidatableBehavior = {
@@ -116,6 +124,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       validatableId: {
         type: String,
         value: ''
+      },
+
+      /**
+       * This boolean represent state about how a user has interacted with a form, meant to be used for UI updates about validation state of the input.
+       * True when user has focused and left(blurred) the field.
+       * Note this field will be reset when a user leaves a field when it's empty: the user will start with a clean slave the next time he will interact with the input
+       */
+      touched: {
+        type: Boolean,
+        readOnly: true,
+        value: false
+      },
+
+      /**
+       * This boolean represent state about how a user has interacted with a form, meant to be used for UI updates about validation state of the input.
+       * True when user has typed in something in the input field.
+       */
+      dirty: {
+        type: Boolean,
+        readOnly: true,
+        value: false
       }
 
     },

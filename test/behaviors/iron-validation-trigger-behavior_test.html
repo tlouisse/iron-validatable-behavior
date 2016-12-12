@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../../../iron-input/iron-input.html">
+    <link rel="import" href="testimpl-validation-trigger-behavior.html">
+    <link rel="import" href="../validators/cats-only.html">
+
+</head>
+<body>
+
+
+<test-fixture id="basic">
+    <template>
+        <input is="testimpl-validation-trigger-behavior" validator="cats-only" label="Voornaam" required auto-validate>
+    </template>
+</test-fixture>
+
+
+<test-fixture id="prefilled">
+    <template>
+        <input is="testimpl-validation-trigger-behavior" pattern="[A-Za-z]*" label="Voornaam" required auto-validate value="bla"
+               validator="cats-only">
+    </template>
+</test-fixture>
+
+<test-fixture id="noAutoValidate">
+    <template>
+        <input is="testimpl-validation-trigger-behavior" pattern="[A-Za-z]*" label="Voornaam" required>
+    </template>
+</test-fixture>
+
+
+<script>
+    suite('testimpl-validation-trigger-behavior tests', function () {
+
+        var input;
+
+        setup(function () {
+            input = fixture('basic');
+        });
+
+
+        suite('Before first blur', function () {
+
+            test('an input won\'t get validated on input initially', function () {
+                sinon.spy(input, 'validate');
+                assert.isFalse(input.validate.called);
+                assert.isFalse(input.invalid, 'input is not validated');
+            });
+
+            test('an input gets validated on input initially when value specified', function () {
+                input = fixture('prefilled');
+                assert.isTrue(input.invalid, 'input is validated'); // since we can't spy, derive from invalid state
+            });
+
+        });
+
+        suite('After blur', function () {
+
+            test('an empty input doesn\'t get validated on blur', function () {
+                sinon.spy(input, 'validate');
+                input.dispatchEvent(new Event('blur', {
+                    'bubbles': true
+                }));
+                assert.isFalse(input.validate.called);
+                assert.isFalse(input.invalid, 'input is not validated and valid');
+            });
+
+
+            test('a non empty input does get validated on blur', function () {
+                input = fixture('basic');
+
+                // Make sure value-changed is triggered (so under the hood input.dirty will be set to true)
+                input.bindValue = '000';
+
+                // Blur
+                sinon.spy(input, 'validate');
+                input.dispatchEvent(new Event('blur', {
+                    'bubbles': true
+                }));
+                assert(input.validate.called);
+                assert.isTrue(input.invalid, 'input is validated and invalid');
+            });
+
+            test('an input gets validated on value-changed after first blur(and input was not empty)', function (done) {
+
+                // Make blur happen on non empty input
+                input.bindValue = '000';
+                input.dispatchEvent(new Event('blur', {
+                    'bubbles': true
+                }));
+
+                // On next value-changed, validate() should be called now
+                sinon.spy(input, 'validate');
+                input.bindValue = 'foo';
+                setTimeout(function () {
+                    assert(input.validate.called);
+                    done();
+                }, 100);
+            });
+        });
+
+        suite('Interaction states', function () {
+            test('should set to dirty when value changed', function () {
+                var input = fixture('basic');
+                input.bindValue = 'foobar';
+                assert.equal(input.dirty, true);
+            });
+
+            test('should set to touched when field left after focus', function () {
+                var input = fixture('basic');
+                input.focus();
+                input.bindValue = '000';
+                input.blur();
+                assert.equal(input.touched, true);
+            });
+        });
+
+        suite('Prefilled input', function () {
+
+            test('gets validated once instantiated', function () {
+                input = fixture('prefilled');
+                assert.isTrue(input.invalid, 'input is validated and invalid');
+            });
+
+            test('should validate on keyup (without blur having happened)', function () {
+                input = fixture('prefilled');
+                input.bindValue = '111';
+                assert.isTrue(input.invalid, 'input is validated and invalid');
+            });
+
+        });
+
+        suite('When auto-validate is false', function () {
+
+            setup(function () {
+                input = fixture('noAutoValidate');
+            });
+
+            test('does not validate on blur', function () {
+                sinon.spy(input, 'validate');
+                input.bindValue = '111'; // sets dirty (when auto-validate would be true)
+                input.dispatchEvent(new Event('blur', {
+                    'bubbles': true
+                }));
+                assert.isFalse(input.validate.called);
+                assert.isFalse(input.dirty);
+            });
+
+            test('does not validate on bind-value-change', function () {
+                sinon.spy(input, 'validate');
+                input.focus();
+                input.bindValue = '111';
+                input.blur(); // sets touched (when auto-validate would be true)
+                input.bindValue = '222';
+                assert.isFalse(input.touched);
+                assert.isFalse(input.validate.called);
+            });
+
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

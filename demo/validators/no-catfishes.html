@@ -18,6 +18,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'no-catfishes',
 
         properties: {
+            /* When true, sole fish(es) are valid as well */
+            fish: {
+                type: Boolean,
+                value: false
+            },
             message: {
                 type: String,
                 value: 'No cat(fish(es)) allowed'
@@ -29,7 +34,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         ],
 
         validate: function (value) {
-            return !value.match(/cat(fish|fishes)?$/);
+            return !value.match( new RegExp('(cat(fish|fishes)?)' + (this.fish ? '|(fish|fishes)' : '') + '$') );
         }
 
     });

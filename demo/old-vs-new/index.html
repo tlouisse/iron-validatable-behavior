@@ -48,6 +48,7 @@
 
             <p>
                 Scenario: add an animal with at least two characters, but cats and catfishes are not allowed.
+                Use a specific configuration for the unique validator instance of no-catfish: fish="true" (in this case, typing 'fish(es)' will be invalid as well)
             </p>
 
             <h2>Before</h2>
@@ -60,6 +61,7 @@
                 <li>Add native validators to input (add as attribute)</li>
                 <li>Add custom error message</li>
                 <li>Eventually, keep track of validity state and dynamically change the error message</li>
+                <li>Configuring the validator would have a global effect, so this is not possible</li>
             </ul>
 
             <script>
@@ -149,6 +151,7 @@
             <ul>
                 <li>Add custom validators to input (add to validator attribute)</li>
                 <li>Add native validators to input (add to validator and as attribute)</li>
+                <li>Add no-catfish validator with fish attribute and connect it via for and validatable-id attrs.</li>
             </ul>
 
             <p>
@@ -156,8 +159,10 @@
                 precedence over that of no-catfishes)
             </p>
 
+            <no-catfishes fish="true" for="newInput"></no-catfishes>
+
             <paper-input id="after" label="Your favorite animal (*)" auto-validate
-                           validator="required pattern no-cats no-catfishes" required pattern=".{2,}">
+                           validator="required pattern no-cats no-catfishes" required pattern=".{2,}" validatable-id="newInput">
             </paper-input>
 
 
@@ -168,8 +173,9 @@
                 <h3>After: sources</h3>
 
                 <h4>HTML</h4>
-                <pre><code class="language-html">&lt;paper-input id=&quot;after&quot; label=&quot;Your favorite animal (*)&quot; auto-validate
-    validator=&quot;required pattern no-cats no-catfishes&quot; required pattern=&quot;.{2,}&quot;&gt;
+                <pre><code class="language-html">&lt;no-cats-or-catfishes fish="true" for=&quot;newInput&quot;&gt;&lt;/no-cats-or-catfishes&gt;
+&lt;paper-input id=&quot;after&quot; label=&quot;Your favorite animal (*)&quot; auto-validate
+    validator=&quot;required pattern no-cats no-catfishes&quot; required pattern=&quot;.{2,}&quot; validatable-id=&quot;newInput&quot;&gt;
 &lt;/paper-input&gt;</code>
 </pre>
 

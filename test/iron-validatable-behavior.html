@@ -290,6 +290,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     });
 
+    suite('Interaction states', function() {
+
+      test('should set dirty and touched to false on init', function() {
+        var input = fixture('basic');
+        assert.equal(input.dirty, false);
+        assert.equal(input.touched, false);
+      });
+
+    });
+
   </script>
 
 </body>
