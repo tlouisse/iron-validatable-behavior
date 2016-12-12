@@ -22,7 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   var nativeMeta = null;
 
   /**
-   * `Use Polymer.IronValidatableBehavior` to implement an element that validates user input.
+   * Use `Polymer.IronValidatableBehavior` to implement an element that validates user input.
    * Use the related `Polymer.IronValidatorBehavior` to add custom validation logic to an iron-input.
    *
    * By default, an `<iron-form>` element validates its fields when the user presses the submit button.
@@ -41,16 +41,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * - dirty: True when user has focused and left(blurred) the field
    * - touched: True when user has typed in something in the input field
    *
-   * For the outside world, these values may only be read. In fundamental form components and behaviors (indirectly) using the 'UicInteractionStateBehavior'
-   * (for instance the 'UicValidationTriggerBehavior' ) these read only values may be altered (do this with _setDirty and _setTouched respectively)
+   * For the outside world, these values may only be read. In fundamental form components and behaviors using this be behavior
+   * (for instance the `IronValidationTriggerBehavior` ) these read only values may be altered (do this with _setDirty and _setTouched respectively).
    *
    *
    * ### Accessibility
    *
-   * Changing the `invalid` property, either manually or by calling `validate()` will update the
-   * `aria-invalid` attribute.
+   * Changing the `invalid` property, either manually or by calling `validate()` will update the `aria-invalid` attribute.
    *
    * @demo demo/index.html
+   * @demo demo/old-vs-new/index.html Shows differences between new and old API. Also shows the interaction states in combination with validation-trigger-behavior
    * @polymerBehavior
    */
   Polymer.IronValidatableBehavior = {
