@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../paper-styles/demo-pages.html">
 
   <link rel="import" href="../../iron-validator-behavior/iron-native-validator.html">
+  <link rel="import" href="../../iron-input/iron-input.html">
 
   <link rel="import" href="validators/cats-only.html">
   <link rel="import" href="validators/no-cats.html">
@@ -78,7 +79,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <p>
         no <code>cat(s)</code> and required:<br/>
 
-        <input id="customAndNative"  is="validatable-input" invalid="{{invalid.c}}" validator="required no-cats" required errors="{{errors2}}">
+        <input id="customAndNative" is="validatable-input" invalid="{{invalid.c}}" validator="required no-cats" required errors="{{errors2}}">
         <br/>
         <span class="valid" hidden$="[[invalid.c]]">valid</span>
         <template is="dom-repeat" items="[[errors2]]">
@@ -86,6 +87,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </template>
 
       </p>
+
+
+      <p>auto-validate (add dirty state)<br/>
+        <input is="iron-input" type="number" max="10" auto-validate invalid="{{invalid.d}}">
+        <div class="valid" hidden$="[[invalid.d]]">valid: below 10</div>
+        <div class="invalid" hidden$="[[!invalid.d]]">invalid: above 10</div>
+      </p>
+
 
     </section>
 
@@ -95,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
     var scope = document.querySelector('template[is="dom-bind"]');
-    scope.invalid = { a: false, b: false, c: false };
+    scope.invalid = { a: false, b: false, c: false, d:false };
   </script>
 
 </body>
