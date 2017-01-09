@@ -2,6 +2,8 @@
 
 <script>
 
+    // TODO: rename this behavior and its methods and move into new repo(InteractionStatebehavior), since it's only responsible for interaction state
+
     /**
      * 'Polymer.IronValidationTriggerBehavior` decides when form input will be validated.
      * The behavior needs to be applied to iron-input (or other elements implementing bindValue and `ironValidatablebehavior`).
@@ -22,29 +24,51 @@
 
         properties: {
             /**
-             * When true, the behavior will manage 'touched' and 'dirty' states and validate on blur/bind-value-changed
-             * @private
+             * Determines what will be used as value changed event. Default is bind-value.
+             * Define this property if other attribute should be used.
              */
-            autoValidate: {
+            attrForValue: {
+                type: String,
+                value: 'bind-value'
+            },
+
+            /**
+             * This boolean represents state about how a user has interacted with a form, meant to be used for UI updates about validation state of the input.
+             * True when user has focused and left(blurred) the field.
+             * Note this field will be reset when a user leaves a field when it's empty: the user will start with a clean slate the next time he will interact with the input
+             */
+            touched: {
                 type: Boolean,
-                value: false
+                readOnly: true,
+                value: false,
+                notify:true
+            },
+
+            /**
+             * This boolean represents state about how a user has interacted with a form, meant to be used for UI updates about validation state of the input.
+             * True when user has typed in something in the input field.
+             */
+            dirty: {
+                type: Boolean,
+                readOnly: true,
+                value: false,
+                notify:true
             }
+
+        },
+
+        get _valueChangedEvent() {
+            return this.attrForValue + '-changed';
         },
 
         /**
          * Register event handlers and validate prefilled inputs
          */
         attached: function () {
-            if(!this.autoValidate) {
-                return;
-            }
-
             this.addEventListener('blur', this._valTrigOnBlur.bind(this));
-            this.addEventListener('bind-value-changed', this._valTrigOnValueChange.bind(this));
-            // Since we not only want to validate on 'input' event, but to every (bind-)value change (implemented by iron-input and iron-autogrow-textarea)
+            this.addEventListener(this._valueChangedEvent, this._valTrigOnValueChange.bind(this));
 
             if (this.value) {
-                this.validate();
                 this._setTouched(true); // treat this as if it were touched, so that validation will be performed on keyup
             }
         },
@@ -53,24 +77,17 @@
          * Deregister event handlers
          */
         detached: function () {
-            if(!this.autoValidate) {
-                return;
-            }
-
             this.removeEventListener('blur', this._valTrigOnBlur);
-            this.removeEventListener('bind-value-changed', this._valTrigOnValueChange);
+            this.removeEventListener(this._valueChangedEvent, this._valTrigOnValueChange);
         },
 
         /**
          * Sets touched value and validates when already dirty.
-         * Resets the touched state when user leaves a field without a value. On next interaction, user will start with a clean slave
+         * Resets the touched state when user leaves a field without a value. On next interaction, user will start with a clean slate
          * @private
          */
         _valTrigOnBlur: function () {
-            if (this.dirty) {
-                this.validate();
-            }
-            this._setTouched(!!this.value);
+            this._setTouched(!!this.value || this.invalid); // touched state of empty, valid fields is reset
         },
 
         /**
@@ -79,11 +96,6 @@
          */
         _valTrigOnValueChange: function () {
             this._setDirty(true);
-            if (this.touched || this.invalid) {
-                this.debounce('validate', function () {
-                    this.validate();
-                }, 100);
-            }
         }
 
 
